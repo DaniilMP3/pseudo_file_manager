@@ -1,1 +1,1 @@
-SQLITE_DB_FILE = 'db/database.db'
+SQLITE_DB_FILE = 'googledrive_cli/server/db/database.db'
