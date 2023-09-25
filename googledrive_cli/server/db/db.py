@@ -12,7 +12,7 @@ def get_db() -> sqlite3.Connection:
         db = sqlite3.connect(config.SQLITE_DB_FILE)
         get_db.db = db
 
-    return sqlite3.connect(config.SQLITE_DB_FILE)
+    return get_db.db
 
 
 def fetchone(sql: LiteralString, params: Iterable[Any] | None = None) -> dict | None:
@@ -39,12 +39,18 @@ def fetchall(sql: LiteralString, params: Iterable[Any] | None = None) -> list[di
 
 
 def execute(sql: LiteralString, params: Iterable[Any] | None = None, autocommit: bool = True) -> None:
-    cursor = _get_cursor(sql, params)
-    if params:
-        cursor.execute(sql, params)
-    else:
-        cursor.execute(sql)
 
+    connection = get_db()
+    if params:
+        connection.cursor().execute(sql, params)
+    else:
+        connection.cursor().execute(sql)
+    if autocommit:
+        connection.commit()
+
+
+def get_last_rowid():
+    return get_db().cursor().lastrowid
 
 def _get_cursor(sql: LiteralString, params: Iterable[Any] | None) -> sqlite3.Cursor:
     """

@@ -1,10 +1,7 @@
-from googledrive_cli.client.requestor import Requestor
-
+from googledrive_cli.data_types.storable import Folder
 
 def main():
-    requestor = Requestor()
-    requestor.login()
-    pass
+    folder = Folder('Folder3')
 
 
 if __name__ == "__main__":
