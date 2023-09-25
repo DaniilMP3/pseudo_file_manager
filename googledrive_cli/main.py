@@ -1,4 +1,9 @@
+from googledrive_cli.client.requestor import Requestor
+
+
 def main():
+    requestor = Requestor()
+    requestor.login()
     pass
 
 

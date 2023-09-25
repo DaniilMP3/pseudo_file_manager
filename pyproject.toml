@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "googledrive-cli"
+name = "googledrive_cli"
 version = "0.1.0"
 description = ""
 authors = ["DaniilMP3 <daniilpurisov390@gmail.com>"]
@@ -8,6 +8,8 @@ packages = [{include = "googledrive_cli"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+pyjwt = "^2.8.0"
+click = "^8.1.7"
 
 [tool.poetry.scripts]
 main = "googledrive_cli.main:main"

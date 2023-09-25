@@ -1,4 +1,4 @@
 .idea
 __pycache__/
-googledrive_cli/server/db/database.db
+googledrive_web/server/db/database.db
 __pycache__

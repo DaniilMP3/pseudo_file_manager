@@ -10,6 +10,3 @@ class NamingService:
 
     authenticator = Authenticator()
 
-
-
-
