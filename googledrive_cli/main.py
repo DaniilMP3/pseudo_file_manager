@@ -1,7 +1,7 @@
-from googledrive_cli.data_types.storable import Folder
+from googledrive_cli.data_types.storable import Directory
 
 def main():
-    folder = Folder('Folder3')
+    folder = Directory('Folder1')
 
 
 if __name__ == "__main__":
