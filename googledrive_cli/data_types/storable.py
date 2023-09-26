@@ -7,34 +7,62 @@ from googledrive_cli.exceptions import *
 
 
 class StorableComponent(ABC):
-    def remove(self, component: StorableComponent) -> None:
+    def display(self) -> None:
         raise NotImplementedError
-    #
 
+    def add(self, new_component: Type[StorableComponent]) -> None:
+        raise NotImplementedError
 
-    def display(self):
+    def remove(self, component: Type[StorableComponent]) -> None:
+        raise NotImplementedError
+
+    def get_name(self) -> str:
         raise NotImplementedError
 
 
 class Directory(StorableComponent):
     def __init__(self, directory_name: str):
-        self.storable_objects: list[Type[StorableComponent]] = []
-        self.directory_name = directory_name
+        self._storable_objects: list[Type[StorableComponent]] = []
+        self._directory_name = directory_name
 
-    def add(self, new_component: type[StorableComponent]) -> None:
-        self.storable_objects.append(new_component)
+    def get_name(self) -> str:
+        return self._directory_name
 
-    def display(self):
-        for storable in self.storable_objects:
-            storable.display()
+    def add(self, new_component: Type[StorableComponent]) -> None:
+        if any(obj.get_name() == new_component.get_name() for obj in self._storable_objects):
+            return
+
+        self._storable_objects.append(new_component)
+
+    def remove(self, component: Type[StorableComponent]) -> None:
+        for i, obj in enumerate(self._storable_objects):
+            if obj.get_name() == component.get_name():
+                del self._storable_objects[i]
+                break
+
+    def display(self) -> None:
+        for storable in self._storable_objects:
+            if isinstance(storable, Directory):
+                print(storable._directory_name)
+            else:
+                storable.display()
 
 
 class File(StorableComponent):
     def __init__(self, file_name: str):
-        self.file_name = file_name
+        self._file_name = file_name
+
+    def display(self) -> None:
+        print(self._file_name)
+
+    def get_name(self) -> str:
+        return self._file_name
 
 
-
+class Document(File):
+    def __init__(self, document_name: str, document_text: str):
+        super().__init__(document_name)
+        self.document_text = document_text
 
 # class Storable(ABC):
 #     def __init__(self, name: str, parent_directory_id: int = None):
