@@ -1,8 +1,28 @@
-from googledrive_cli.data_types.storable import Directory
+import click
+
+
+@click.group
+def cli():
+    pass
+
+# @click.command()
+# @click.argument('path')
+# def ls(path):
+#     print(path)
+
+
+@click.command()
+@click.option('--path', default='')
+def cd(path):
+    print(path)
+
+
+cli.add_command(cd)
+
 
 def main():
-    folder = Directory('Folder1')
+    pass
 
 
 if __name__ == "__main__":
-    main()
+    cli()

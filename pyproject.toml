@@ -12,7 +12,7 @@ pyjwt = "^2.8.0"
 click = "^8.1.7"
 
 [tool.poetry.scripts]
-main = "googledrive_cli.main:main"
+main = "googledrive_cli.main:cli"
 
 [build-system]
 requires = ["poetry-core"]

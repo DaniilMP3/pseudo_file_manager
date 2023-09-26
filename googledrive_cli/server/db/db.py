@@ -52,6 +52,7 @@ def execute(sql: LiteralString, params: Iterable[Any] | None = None, autocommit:
 def get_last_rowid():
     return get_db().cursor().lastrowid
 
+
 def _get_cursor(sql: LiteralString, params: Iterable[Any] | None) -> sqlite3.Cursor:
     """
     :param sql: sqlite query
