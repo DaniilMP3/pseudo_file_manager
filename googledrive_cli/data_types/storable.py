@@ -4,6 +4,20 @@ import sqlite3
 from abc import ABC, abstractmethod
 from googledrive_cli.server.db.db import *
 from googledrive_cli.exceptions import *
+from googledrive_cli.exceptions import *
+
+# Composite Pattern:
+
+
+def _is_storable_name_available(storable_name: str) -> bool:
+    """
+
+    :param storable_name: name of the storable object
+    :return: bool
+    """
+    if not storable_name or not storable_name.isalnum():
+        return False
+    return True
 
 
 class StorableComponent(ABC):
@@ -22,6 +36,8 @@ class StorableComponent(ABC):
 
 class Directory(StorableComponent):
     def __init__(self, directory_name: str):
+        if not _is_storable_name_available(directory_name):
+            raise StorableNameNotAvailable(directory_name)
         self._storable_objects: list[Type[StorableComponent]] = []
         self._directory_name = directory_name
 
@@ -30,7 +46,7 @@ class Directory(StorableComponent):
 
     def add(self, new_component: Type[StorableComponent]) -> None:
         if any(obj.get_name() == new_component.get_name() for obj in self._storable_objects):
-            return
+            raise StorableObjectAlreadyExists(f'Storable object {new_component.get_name()} already exists')
 
         self._storable_objects.append(new_component)
 
@@ -50,6 +66,8 @@ class Directory(StorableComponent):
 
 class File(StorableComponent):
     def __init__(self, file_name: str):
+        if not _is_storable_name_available(file_name):
+            raise StorableNameNotAvailable(file_name)
         self._file_name = file_name
 
     def display(self) -> None:
