@@ -1,6 +1,6 @@
 import cmd2
 import argparse
-from googledrive_cli.data_types.storable import Directory, Document, File
+from googledrive_cli.data_types.storable import Directory, Document
 from googledrive_cli.storage import CloudStorage, LocalStorage
 from typing import Type
 from googledrive_cli.exceptions import *
@@ -47,7 +47,7 @@ class Application(cmd2.Cmd):
                 self._remote_storage.add(Directory(args.directory_name))
             else:
                 self._local_storage.add(Directory(args.directory_name))
-        except StorableObjectAlreadyExists as e:
+        except StorableNameAlreadyExists as e:
             self.poutput(str(e))
 
     download_parser = cmd2.Cmd2ArgumentParser()
@@ -62,13 +62,13 @@ class Application(cmd2.Cmd):
         except StorableObjectNotExists as e:
             self.poutput((str(e)))
 
-        except StorableObjectAlreadyExists as e:
+        except StorableNameAlreadyExists as e:
             self.poutput(str(e) + '. Download canceled')
 
     touch_parser = cmd2.Cmd2ArgumentParser()
     touch_parser.add_argument('-r', '--remote', action='store_true')
-    touch_parser.add_argument('document_name')
-    touch_parser.add_argument('text', nargs='+')
+    touch_parser.add_argument( 'document_name')
+    touch_parser.add_argument('text', default='', nargs='+')
 
     @cmd2.with_argparser(touch_parser)
     def do_touch(self, args):
@@ -81,7 +81,7 @@ class Application(cmd2.Cmd):
                 self._remote_storage.add(Document(args.document_name, text))
             else:
                 self._local_storage.add(Document(args.document_name, text))
-        except StorableObjectAlreadyExists as e:
+        except StorableNameAlreadyExists as e:
             self.poutput(str(e))
 
     cat_parser = cmd2.Cmd2ArgumentParser()

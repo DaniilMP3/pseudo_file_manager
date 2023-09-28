@@ -13,9 +13,9 @@ class StorableNameNotAvailable(Exception):
         super().__init__(f"Storable name: {storable_name} is not available")
 
 
-class StorableObjectAlreadyExists(Exception):
+class StorableNameAlreadyExists(Exception):
     def __init__(self, storable_name: str):
-        super().__init__(f"Storable object {storable_name} already exists")
+        super().__init__(f"Storable object with name: {storable_name} already exists")
 
 
 class StorableObjectNotExists(Exception):

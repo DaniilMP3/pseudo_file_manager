@@ -1,8 +1,8 @@
 from __future__ import annotations
+
+import re
 from typing import Type
-import sqlite3
-from abc import ABC, abstractmethod
-from googledrive_cli.exceptions import *
+from abc import ABC
 from googledrive_cli.exceptions import *
 
 # Composite Pattern:
@@ -14,7 +14,7 @@ def _is_storable_name_available(storable_name: str) -> bool:
     :param storable_name: name of the storable object
     :return: bool
     """
-    if not storable_name or not storable_name.isalnum():
+    if not storable_name or not re.match(r'^[A-Za-z0-9_.]+$', storable_name):
         return False
     return True
 
@@ -36,7 +36,7 @@ class StorableComponent(ABC):
         raise NotImplementedError
 
 
-class Directory(StorableComponent):
+class Directory(StorableComponent, ABC):
     def __init__(self, directory_name: str):
         if not _is_storable_name_available(directory_name):
             raise StorableNameNotAvailable(directory_name)
@@ -46,14 +46,9 @@ class Directory(StorableComponent):
     def get_name(self) -> str:
         return self._directory_name
 
-    def get_file(self, file_name: str) -> Type[File]:
-        for obj in self.storable_objects:
-            if issubclass(obj, File) and obj.get_name() == file_name:
-                return obj
-
     def add(self, new_component: Type[StorableComponent]) -> None:
         if any(obj.get_name() == new_component.get_name() for obj in self.storable_objects):
-            raise StorableObjectAlreadyExists(new_component.get_name())
+            raise StorableNameAlreadyExists(new_component.get_name())
 
         self.storable_objects.append(new_component)
 

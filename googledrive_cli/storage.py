@@ -29,13 +29,15 @@ class Storage(StorableComponent):
         self._root_dir = Directory('root')
         self.current_dir = self._root_dir
 
-    def _find_component(self, path: str) -> Type[StorableComponent]:
+    def _find_component(self, path: str, find_from_root: bool = False) -> Type[StorableComponent]:
         """
         Find component in file system 'tree'
         """
         current_directory = self.current_dir
+        if find_from_root:
+            current_directory = self._root_dir
+
         path_components = path.split('/')
-        print(path)
 
         for i, component in enumerate(path_components):
             component_found = False
@@ -80,7 +82,7 @@ class CloudStorage(Storage):
 
     @pre_process_path
     def download_component(self, path: str) -> Type[StorableComponent]:
-        founded_component = self._find_component(path)
+        founded_component = self._find_component(path, True)
         return founded_component
 
 
