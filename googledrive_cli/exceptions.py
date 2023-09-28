@@ -14,5 +14,10 @@ class StorableNameNotAvailable(Exception):
 
 
 class StorableObjectAlreadyExists(Exception):
-    def __init__(self, directory_name: str):
-        super().__init__(f"Directory {directory_name} alreay exists")
+    def __init__(self, storable_name: str):
+        super().__init__(f"Storable object {storable_name} already exists")
+
+
+class StorableObjectNotExists(Exception):
+    def __init__(self, storable_name: str):
+        super().__init__(f"Cannot find {storable_name} storable object")
