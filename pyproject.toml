@@ -8,8 +8,8 @@ packages = [{include = "googledrive_cli"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pyjwt = "^2.8.0"
 cmd2 = "^2.4.3"
+pre-commit = "^3.4.0"
 
 [tool.poetry.scripts]
 main = "googledrive_cli.main:cli"

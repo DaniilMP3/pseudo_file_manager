@@ -1,18 +1,17 @@
 from googledrive_cli.data_types.storable import Directory, StorableComponent
-from abc import ABC
-from googledrive_cli.exceptions import *
+from googledrive_cli.exceptions import PathNotExistsError
 from typing import Type
 
 
 def __pre_process_path(path: str) -> str:
-    path.strip('/')
+    path.strip("/")
     flag = False
     for i, char in enumerate(path):
-        if char in '\\':  # Unavailable separator
-            return ''
-        if char == '/' and flag:
-            path = path[:i] + path[i + 1:]  # Remove extra '/'
-        elif char == '/' and not flag:
+        if char in "\\":  # Unavailable separator
+            return ""
+        if char == "/" and flag:
+            path = path[:i] + path[i + 1 :]  # Remove extra '/'
+        elif char == "/" and not flag:
             flag = True
     return path
 
@@ -21,15 +20,18 @@ def pre_process_path(func):
     def wrapper(self, path):
         path = __pre_process_path(path)
         return func(self, path)
+
     return wrapper
 
 
 class Storage(StorableComponent):
     def __init__(self):
-        self._root_dir = Directory('root')
+        self._root_dir = Directory("root")
         self.current_dir = self._root_dir
 
-    def _find_component(self, path: str, find_from_root: bool = False) -> Type[StorableComponent]:
+    def _find_component(
+        self, path: str, find_from_root: bool = False
+    ) -> Type[StorableComponent]:
         """
         Find component in file system 'tree'
         """
@@ -37,7 +39,7 @@ class Storage(StorableComponent):
         if find_from_root:
             current_directory = self._root_dir
 
-        path_components = path.split('/')
+        path_components = path.split("/")
 
         for i, component in enumerate(path_components):
             component_found = False

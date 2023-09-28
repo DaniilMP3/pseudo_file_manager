@@ -3,7 +3,11 @@ from __future__ import annotations
 import re
 from typing import Type
 from abc import ABC
-from googledrive_cli.exceptions import *
+from googledrive_cli.exceptions import (
+    StorableObjectNotExists,
+    StorableNameNotAvailable,
+    StorableNameAlreadyExists,
+)
 
 # Composite Pattern:
 
@@ -14,7 +18,7 @@ def _is_storable_name_available(storable_name: str) -> bool:
     :param storable_name: name of the storable object
     :return: bool
     """
-    if not storable_name or not re.match(r'^[A-Za-z0-9_.]+$', storable_name):
+    if not storable_name or not re.match(r"^[A-Za-z0-9_.]+$", storable_name):
         return False
     return True
 
@@ -47,7 +51,9 @@ class Directory(StorableComponent, ABC):
         return self._directory_name
 
     def add(self, new_component: Type[StorableComponent]) -> None:
-        if any(obj.get_name() == new_component.get_name() for obj in self.storable_objects):
+        if any(
+            obj.get_name() == new_component.get_name() for obj in self.storable_objects
+        ):
             raise StorableNameAlreadyExists(new_component.get_name())
 
         self.storable_objects.append(new_component)
@@ -89,7 +95,7 @@ class File(StorableComponent):
 
 
 class Document(File):
-    def __init__(self, document_name: str, document_text: str = ''):
+    def __init__(self, document_name: str, document_text: str = ""):
         super().__init__(document_name)
         self._document_text = document_text
 
