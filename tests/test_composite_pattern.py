@@ -47,7 +47,7 @@ class TestCompositePattern(unittest.TestCase):
         with self.assertRaises(StorableNameAlreadyExists):
             directory1.add(document)
 
-    def get_child_from_directory(self):
+    def test_get_child_from_directory(self):
         directory = Directory("Directory")
 
         document1 = Document("Doc1")
