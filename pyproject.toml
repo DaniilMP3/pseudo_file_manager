@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "googledrive_cli"
+name = "file_manager"
 version = "0.1.0"
 description = ""
 authors = ["DaniilMP3 <daniilpurisov390@gmail.com>"]
 readme = "README.md"
-packages = [{include = "googledrive_cli"}]
+packages = [{include = "file_manager"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -12,7 +12,7 @@ cmd2 = "^2.4.3"
 pre-commit = "^3.4.0"
 
 [tool.poetry.scripts]
-main = "googledrive_cli.main:cli"
+main = "file_manager.main:cli"
 
 [build-system]
 requires = ["poetry-core"]

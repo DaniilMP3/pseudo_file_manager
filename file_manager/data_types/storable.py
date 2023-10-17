@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Type
 from abc import ABC
-from googledrive_cli.exceptions import (
+from file_manager.exceptions import (
     StorableObjectNotExists,
     StorableNameNotAvailable,
     StorableNameAlreadyExists,

@@ -1,7 +1,7 @@
 import cmd2
-from googledrive_cli.data_types.storable import Directory, Document
-from googledrive_cli.storage import CloudStorage, LocalStorage
-from googledrive_cli.exceptions import (
+from file_manager.data_types.storable import Directory, Document
+from file_manager.storage import CloudStorage, LocalStorage
+from file_manager.exceptions import (
     StorableNameAlreadyExists,
     PathNotExistsError,
     StorableObjectNotExists,

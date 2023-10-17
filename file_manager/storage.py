@@ -1,5 +1,5 @@
-from googledrive_cli.data_types.storable import Directory, StorableComponent
-from googledrive_cli.exceptions import PathNotExistsError
+from file_manager.data_types.storable import Directory, StorableComponent
+from file_manager.exceptions import PathNotExistsError
 from typing import Type
 
 

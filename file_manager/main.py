@@ -1,5 +1,5 @@
-from googledrive_cli.storage import CloudStorage, LocalStorage
-from googledrive_cli.app import Application
+from file_manager.storage import CloudStorage, LocalStorage
+from file_manager.app import Application
 
 
 def cli():
