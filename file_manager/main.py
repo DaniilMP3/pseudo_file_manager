@@ -1,18 +1,9 @@
-from file_manager.storage import CloudStorage, LocalStorage
-from file_manager.app import Application
-
-
-def cli():
-    import sys
-
-    c = Application(LocalStorage(), CloudStorage())
-    sys.exit(c.cmdloop())
+from file_manager.app import GUI
 
 
 def main():
-    pass
+    GUI()
 
 
 if __name__ == "__main__":
-
-    cli()
+    pass

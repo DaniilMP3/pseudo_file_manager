@@ -1,10 +1,10 @@
 import unittest
-from googledrive_cli.exceptions import (
+from file_manager.exceptions import (
     StorableNameNotAvailable,
     StorableNameAlreadyExists,
     StorableObjectNotExists,
 )
-from googledrive_cli.data_types.storable import Directory, Document
+from file_manager.data_types.storable import Directory, Document
 
 
 class TestCompositePattern(unittest.TestCase):

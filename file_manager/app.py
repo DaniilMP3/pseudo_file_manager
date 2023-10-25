@@ -1,107 +1,53 @@
-import cmd2
-from file_manager.data_types.storable import Directory, Document
-from file_manager.storage import CloudStorage, LocalStorage
-from file_manager.exceptions import (
-    StorableNameAlreadyExists,
-    PathNotExistsError,
-    StorableObjectNotExists,
-)
+import tkinter as tk
+from file_manager.storage import Storage
 
 
-class Application(cmd2.Cmd):
-    def __init__(self, local_storage: LocalStorage, remote_storage: CloudStorage):
-        super().__init__()
-        self._local_storage = local_storage
-        self._remote_storage = remote_storage
+class GUI:
+    def __init__(self):
+        self.storage = Storage()
+        self.root = tk.Tk()
 
-    cd_parser = cmd2.Cmd2ArgumentParser()
-    cd_parser.add_argument("-r", "--remote", action="store_true")
-    cd_parser.add_argument("path", nargs="?", help="path go to", default="")
+        self.root.geometry("600x400")
 
-    @cmd2.with_argparser(cd_parser)
-    def do_cd(self, args):
-        try:
-            if args.remote:
-                self._remote_storage.cd(args.path)
-            else:
-                self._local_storage.cd(args.path)
-        except PathNotExistsError as e:
-            self.poutput(str(e))
+        self.main_frame = tk.Frame(self.root)
+        self.main_frame.pack(fill=tk.BOTH, expand=1)
 
-    ls_parser = cmd2.Cmd2ArgumentParser()
-    ls_parser.add_argument("-r", "--remote", action="store_true")
+        # Configure scrollbar
+        self.canvas = tk.Canvas(self.main_frame)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
-    @cmd2.with_argparser(ls_parser)
-    def do_ls(self, args):
-        if args.remote:
-            self._remote_storage.display()
-        else:
-            self._local_storage.display()
+        self.scroll_bar = tk.Scrollbar(
+            self.main_frame, orient=tk.VERTICAL, command=self.canvas.yview
+        )
+        self.scroll_bar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    mkdir_parser = cmd2.Cmd2ArgumentParser()
-    mkdir_parser.add_argument("-r", "--remote", action="store_true")
-    mkdir_parser.add_argument("directory_name", help="directory name")
+        self.canvas.configure(yscrollcommand=self.scroll_bar.set)
+        self.canvas.bind(
+            "<Configure>",
+            lambda event: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
+        )
+        self.canvas.bind(
+            "<MouseWheel>",
+            lambda e: self.canvas.yview_scroll(int(-1 * (e.delta / 120)), "units"),
+        )
 
-    @cmd2.with_argparser(mkdir_parser)
-    def do_mkdir(self, args):
-        try:
-            if args.remote:
-                self._remote_storage.add(Directory(args.directory_name))
-            else:
-                self._local_storage.add(Directory(args.directory_name))
-        except StorableNameAlreadyExists as e:
-            self.poutput(str(e))
+        self.helper_frame = tk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.helper_frame, anchor="nw")
 
-    download_parser = cmd2.Cmd2ArgumentParser()
-    download_parser.add_argument("path")
+        label = tk.Label(self.helper_frame, text="Label")
+        label.pack()
+        del_button = tk.Button(
+            self.helper_frame, text="Delete", command=lambda: label.destroy()
+        )
+        del_button.pack()
 
-    @cmd2.with_argparser(download_parser)
-    def do_download(self, args):
-        try:
-            downloaded = self._remote_storage.download_component(args.path)
-            self._local_storage.current_dir.add(downloaded)
+        self.root.mainloop()
 
-        except StorableObjectNotExists as e:
-            self.poutput((str(e)))
+    def cd(self):
+        pass
 
-        except StorableNameAlreadyExists as e:
-            self.poutput(str(e) + ". Download canceled")
+    def update_storables_in_frame(self):
 
-    touch_parser = cmd2.Cmd2ArgumentParser()
-    touch_parser.add_argument("-r", "--remote", action="store_true")
-    touch_parser.add_argument("document_name")
-    touch_parser.add_argument("text", default="", nargs="+")
-
-    @cmd2.with_argparser(touch_parser)
-    def do_touch(self, args):
-        try:
-            text = args.text
-            if isinstance(args.text, list):
-                text = " ".join(args.text)
-
-            if args.remote:
-                self._remote_storage.add(Document(args.document_name, text))
-            else:
-                self._local_storage.add(Document(args.document_name, text))
-        except StorableNameAlreadyExists as e:
-            self.poutput(str(e))
-
-    cat_parser = cmd2.Cmd2ArgumentParser()
-    cat_parser.add_argument("-r", "--remote", action="store_true")
-    cat_parser.add_argument("document_name")
-
-    @cmd2.with_argparser(cat_parser)
-    def do_cat(self, args):
-        try:
-            storable = None
-            if args.remote:
-                storable = self._remote_storage.current_dir.get_child(
-                    args.document_name
-                )
-            else:
-                storable = self._local_storage.current_dir.get_child(args.document_name)
-            storable.display_data()
-        except StorableObjectNotExists as e:
-            self.poutput(str(e))
-        except AttributeError:
-            self.poutput("This storable object it is not a document")
+        for storable in self.storage.current_dir_components:
+            label = tk.Label(self.helper_frame, text=storable.get_name())
+            label.pack()

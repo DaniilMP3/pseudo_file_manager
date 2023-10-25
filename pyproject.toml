@@ -12,7 +12,7 @@ cmd2 = "^2.4.3"
 pre-commit = "^3.4.0"
 
 [tool.poetry.scripts]
-main = "file_manager.main:cli"
+main = "file_manager.main:main"
 
 [build-system]
 requires = ["poetry-core"]
