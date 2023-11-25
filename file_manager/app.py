@@ -29,7 +29,7 @@ class GUI:
         self.storable_factory = StorableFactory()
         self.root = tk.Tk()
 
-        self._current_row = len(self.storage.current_dir_components)
+        self._current_row = len(self.storage.current_dir.storable_objects)
 
         self.root.geometry("600x400")
 
@@ -73,7 +73,13 @@ class GUI:
         )
 
         self.sort_by_menu = tk.Menu(self.root, tearoff=False)
-        self.sort_by_menu.add_command(label="Name")
+        self.sort_by_menu.add_command(
+            label="Name",
+            command=lambda: [
+                self.storage.sort_by("name"),
+                self.update_storables_in_frame(),
+            ],
+        )
 
         self.popup_menu.add_cascade(label="Create", menu=self.create_storable_menu)
         self.popup_menu.add_cascade(label="Sort by", menu=self.sort_by_menu)
@@ -170,8 +176,8 @@ class GUI:
         for child in self.helper_frame.winfo_children():
             child.destroy()
 
-        self._current_row = len(self.storage.current_dir_components)
-        for storable in self.storage.current_dir_components:
+        self._current_row = len(self.storage.current_dir.storable_objects)
+        for storable in self.storage.current_dir.storable_objects:
             storable_button = SButton(
                 self.helper_frame,
                 storable.storable_type,
@@ -179,8 +185,7 @@ class GUI:
                 text=storable.get_name(),
                 width=10,
                 height=1,
-                command=lambda s=storable, t=storable.storable_type:
-                self.on_click_storable(
+                command=lambda s=storable, t=storable.storable_type: self.on_click_storable(
                     s, t
                 ),
             )

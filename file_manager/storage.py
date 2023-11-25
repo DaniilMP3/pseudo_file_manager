@@ -59,6 +59,10 @@ class Storage(StorableComponent):
 
         return current_directory
 
+    def sort_by(self, sort_type: str):
+        if sort_type == "name":
+            self.current_dir.storable_objects.sort(key=lambda x: x.get_name())
+
     @pre_process_path
     def cd(self, path: str) -> None:
         if not path:
@@ -73,10 +77,6 @@ class Storage(StorableComponent):
 
     def add(self, new_component: Type[StorableComponent]) -> None:
         self.current_dir.add(new_component)
-
-    @property
-    def current_dir_components(self):
-        return self.current_dir.storable_objects
 
     def display(self):
         self.current_dir.display()
