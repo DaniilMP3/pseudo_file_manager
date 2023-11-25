@@ -24,8 +24,9 @@ def _is_storable_name_available(storable_name: str) -> bool:
 
 
 class StorableComponent(ABC):
-    def __init__(self):
+    def __init__(self, storable_type: str):
         self.parent_directory = None
+        self.storable_type = storable_type
 
     def display(self) -> None:
         raise NotImplementedError
@@ -47,7 +48,7 @@ class Directory(StorableComponent, ABC):
     def __init__(self, directory_name: str):
         if not _is_storable_name_available(directory_name):
             raise StorableNameNotAvailable(directory_name)
-        super().__init__()
+        super().__init__("directory")
         self.storable_objects: list[Type[StorableComponent]] = []
         self._directory_name = directory_name
 
@@ -86,10 +87,10 @@ class Directory(StorableComponent, ABC):
 
 
 class File(StorableComponent):
-    def __init__(self, file_name: str):
+    def __init__(self, file_name: str, file_type: str = None):
         if not _is_storable_name_available(file_name):
             raise StorableNameNotAvailable(file_name)
-        super().__init__()
+        super().__init__(file_type)
         self._file_name = file_name
 
     def display(self) -> None:
@@ -101,7 +102,7 @@ class File(StorableComponent):
 
 class Document(File):
     def __init__(self, document_name: str, document_text: str = ""):
-        super().__init__(document_name)
+        super().__init__(document_name, "document")
         self._document_text = document_text
 
     def get_data(self):

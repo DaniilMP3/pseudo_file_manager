@@ -29,7 +29,7 @@ class GUI:
         self.storable_factory = StorableFactory()
         self.root = tk.Tk()
 
-        self._current_row = 0
+        self._current_row = len(self.storage.current_dir_components)
 
         self.root.geometry("600x400")
 
@@ -66,9 +66,7 @@ class GUI:
             label="Directory",
             command=lambda: self.show_storable_name_popup_menu("directory"),
         )
-        self.create_storable_menu.add_command(
-            label="File", command=lambda: self.show_storable_name_popup_menu("file")
-        )
+
         self.create_storable_menu.add_command(
             label="Document",
             command=lambda: self.show_storable_name_popup_menu("document"),
@@ -86,10 +84,12 @@ class GUI:
 
         self.nav_button_frame = tk.Frame(self.root)
         self.nav_button_frame.pack(side=tk.TOP, padx=10, pady=5)
-        prev_button = tk.Button(self.nav_button_frame, text="Previous")
+        prev_button = tk.Button(
+            self.nav_button_frame,
+            text="Previous",
+            command=self.on_click_previous_button,
+        )
         prev_button.pack(side=tk.LEFT)
-        next_button = tk.Button(self.nav_button_frame, text="Next")
-        next_button.pack(side=tk.RIGHT)
 
         self.root.mainloop()
 
@@ -122,13 +122,21 @@ class GUI:
         self, storable_instance: StorableComponent, storable_type: str
     ):
         if storable_type == "directory":
-            self.remove_storables_in_frame()
             self.storage.current_dir = storable_instance
             self.update_storables_in_frame()
         elif storable_type == "file":
             pass
         elif storable_type == "document":
             pass
+
+    def _place_storable_button(self, storable_button: SButton):
+        storable_button.grid(row=self._current_row, column=0, columnspan=4)
+        storable_type_label = tk.Label(
+            self.helper_frame, text=storable_button.storable_type
+        )
+        storable_type_label.grid(row=self._current_row, column=5, columnspan=4)
+
+        self._current_row += 1
 
     def add_storable(self, name: str, storable_type: str):
         storable_button = None
@@ -149,12 +157,7 @@ class GUI:
                     storable_instance, storable_type
                 ),
             )
-            storable_button.grid(row=self._current_row, column=0, columnspan=4)
-
-            storable_type_label = tk.Label(self.helper_frame, text=storable_type)
-            storable_type_label.grid(row=self._current_row, column=5, columnspan=4)
-
-            self._current_row += 1
+            self._place_storable_button(storable_button)
 
         except (StorableNameAlreadyExists, StorableNameNotAvailable) as e:
             messagebox.showwarning(
@@ -163,11 +166,29 @@ class GUI:
                 message=f"{str(e)}",
             )
 
-    def remove_storables_in_frame(self):
+    def update_storables_in_frame(self):
         for child in self.helper_frame.winfo_children():
             child.destroy()
 
-    def update_storables_in_frame(self):
+        self._current_row = len(self.storage.current_dir_components)
         for storable in self.storage.current_dir_components:
-            label = tk.Label(self.helper_frame, text=storable.get_name())
-            label.pack()
+            storable_button = SButton(
+                self.helper_frame,
+                storable.storable_type,
+                storable,
+                text=storable.get_name(),
+                width=10,
+                height=1,
+                command=lambda s=storable, t=storable.storable_type:
+                self.on_click_storable(
+                    s, t
+                ),
+            )
+            self._place_storable_button(storable_button)
+
+    def on_click_previous_button(self):
+        if not self.storage.current_dir.parent_directory:
+            return
+        self.storage.current_dir = self.storage.current_dir.parent_directory
+
+        self.update_storables_in_frame()
