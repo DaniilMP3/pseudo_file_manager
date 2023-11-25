@@ -24,6 +24,9 @@ def _is_storable_name_available(storable_name: str) -> bool:
 
 
 class StorableComponent(ABC):
+    def __init__(self):
+        self.parent_directory = None
+
     def display(self) -> None:
         raise NotImplementedError
 
@@ -44,6 +47,7 @@ class Directory(StorableComponent, ABC):
     def __init__(self, directory_name: str):
         if not _is_storable_name_available(directory_name):
             raise StorableNameNotAvailable(directory_name)
+        super().__init__()
         self.storable_objects: list[Type[StorableComponent]] = []
         self._directory_name = directory_name
 
@@ -55,7 +59,7 @@ class Directory(StorableComponent, ABC):
             obj.get_name() == new_component.get_name() for obj in self.storable_objects
         ):
             raise StorableNameAlreadyExists(new_component.get_name())
-
+        new_component.parent_directory = self
         self.storable_objects.append(new_component)
 
     def remove(self, component: Type[StorableComponent]) -> None:
@@ -85,6 +89,7 @@ class File(StorableComponent):
     def __init__(self, file_name: str):
         if not _is_storable_name_available(file_name):
             raise StorableNameNotAvailable(file_name)
+        super().__init__()
         self._file_name = file_name
 
     def display(self) -> None:
