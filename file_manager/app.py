@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from file_manager.storage import Storage
-from file_manager.exceptions import StorableNameAlreadyExists
+from file_manager.exceptions import StorableNameAlreadyExists, StorableNameNotAvailable
 from file_manager.data_types.storable import (
-    Directory,
     StorableComponent,
 )
 from file_manager.storable_factory import StorableFactory
@@ -29,6 +28,8 @@ class GUI:
         self.storage = Storage()
         self.storable_factory = StorableFactory()
         self.root = tk.Tk()
+
+        self._current_row = 0
 
         self.root.geometry("600x400")
 
@@ -83,15 +84,12 @@ class GUI:
 
         self.root.bind("<Button-3>", self.show_popup_menu)
 
-        test_dir = SButton(
-            self.helper_frame, "directory", Directory("test_dir"), text="test_dir"
-        )
-        test_dir.pack()
-
-        del_button = tk.Button(
-            self.helper_frame, text="Delete", command=test_dir.destroy
-        )
-        del_button.pack()
+        self.nav_button_frame = tk.Frame(self.root)
+        self.nav_button_frame.pack(side=tk.TOP, padx=10, pady=5)
+        prev_button = tk.Button(self.nav_button_frame, text="Previous")
+        prev_button.pack(side=tk.LEFT)
+        next_button = tk.Button(self.nav_button_frame, text="Next")
+        next_button.pack(side=tk.RIGHT)
 
         self.root.mainloop()
 
@@ -110,16 +108,27 @@ class GUI:
         inputtext = tk.Text(self.popup_storable_name_window, height=1, width=10)
         inputtext.pack()
 
-        tk.Button(self.popup_storable_name_window, text="Enter")
+        enter_button = tk.Button(
+            self.popup_storable_name_window,
+            text="Enter",
+            command=lambda: [
+                self.add_storable(inputtext.get(1.0, "end-1c"), storable_type),
+                self.popup_storable_name_window.destroy(),
+            ],
+        )
+        enter_button.pack()
 
-    def create_storable(self):
-        pass
-
-    def on_click_storable(self):
-        pass
-
-    def _on_click_directory(self):
-        pass
+    def on_click_storable(
+        self, storable_instance: StorableComponent, storable_type: str
+    ):
+        if storable_type == "directory":
+            self.remove_storables_in_frame()
+            self.storage.current_dir = storable_instance
+            self.update_storables_in_frame()
+        elif storable_type == "file":
+            pass
+        elif storable_type == "document":
+            pass
 
     def add_storable(self, name: str, storable_type: str):
         storable_button = None
@@ -128,13 +137,35 @@ class GUI:
             storable_instance = self.storable_factory.get_storable(storable_type, name)
 
             self.storage.current_dir.add(storable_instance)
-            storable_button = SButton(
-                self.helper_frame, storable_type, storable_instance
-            )
-            storable_button.pack()
 
-        except StorableNameAlreadyExists as e:
-            messagebox.Message(self.root, icon=messagebox.WARNING, message=f"{str(e)}")
+            storable_button = SButton(
+                self.helper_frame,
+                storable_type,
+                storable_instance,
+                text=name,
+                width=10,
+                height=1,
+                command=lambda: self.on_click_storable(
+                    storable_instance, storable_type
+                ),
+            )
+            storable_button.grid(row=self._current_row, column=0, columnspan=4)
+
+            storable_type_label = tk.Label(self.helper_frame, text=storable_type)
+            storable_type_label.grid(row=self._current_row, column=5, columnspan=4)
+
+            self._current_row += 1
+
+        except (StorableNameAlreadyExists, StorableNameNotAvailable) as e:
+            messagebox.showwarning(
+                title="Storable creation warning",
+                icon=messagebox.WARNING,
+                message=f"{str(e)}",
+            )
+
+    def remove_storables_in_frame(self):
+        for child in self.helper_frame.winfo_children():
+            child.destroy()
 
     def update_storables_in_frame(self):
         for storable in self.storage.current_dir_components:

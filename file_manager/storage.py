@@ -27,11 +27,7 @@ def pre_process_path(func):
 class Storage(StorableComponent):
     def __init__(self):
         self._root_dir = Directory("root")
-        self._current_dir = self._root_dir
-
-    @property
-    def current_dir(self):
-        return self._current_dir
+        self.current_dir = self._root_dir
 
     def _find_component(
         self, path: str, find_from_root: bool = False
@@ -39,7 +35,7 @@ class Storage(StorableComponent):
         """
         Find component in file system 'tree'
         """
-        current_directory = self._current_dir
+        current_directory = self.current_dir
         if find_from_root:
             current_directory = self._root_dir
 
@@ -73,17 +69,17 @@ class Storage(StorableComponent):
         if not isinstance(founded_directory, Directory):
             raise PathNotExistsError(path)
 
-        self._current_dir = founded_directory
+        self.current_dir = founded_directory
 
     def add(self, new_component: Type[StorableComponent]) -> None:
-        self._current_dir.add(new_component)
+        self.current_dir.add(new_component)
 
     @property
     def current_dir_components(self):
-        return self._current_dir.storable_objects
+        return self.current_dir.storable_objects
 
     def display(self):
-        self._current_dir.display()
+        self.current_dir.display()
 
 
 class CloudStorage(Storage):
