@@ -29,6 +29,10 @@ class Storage(StorableComponent):
         self._root_dir = Directory("root")
         self._current_dir = self._root_dir
 
+    @property
+    def current_dir(self):
+        return self._current_dir
+
     def _find_component(
         self, path: str, find_from_root: bool = False
     ) -> Type[StorableComponent]:
